@@ -1,0 +1,125 @@
+{
+  "midi_output_port": "GuitarPresetControl",
+  "plugins": [
+    {
+      "name": "Archetype Petrucci",
+      "channel": 1,
+      "bank_msb": null,
+      "bank_lsb": null,
+      "presets": [
+        {
+          "label": "Clean",
+          "program": 0,
+          "hotkey": "ctrl+alt+1"
+        },
+        {
+          "label": "Rhythm",
+          "program": 1,
+          "hotkey": "ctrl+alt+2"
+        },
+        {
+          "label": "Lead",
+          "program": 2,
+          "hotkey": "ctrl+alt+3"
+        }
+      ]
+    },
+    {
+      "name": "ML Sound Lab ML5",
+      "ui_mode": "program_grid",
+      "channel": 2,
+      "bank_msb": null,
+      "bank_lsb": null,
+      "amp_labels": [
+        "ML5 Fat",
+        "ML5 Clean",
+        "ML5 Tweed",
+        "ML5 Edge",
+        "ML5 Crunch",
+        "ML1",
+        "ML2C+",
+        "ML4",
+        "ML5 Extreme"
+      ],
+      "program_grid": [
+        ["Fat Clean", "Fat Ambience", "Clean Delay", "PC 03", "PC 04", "PC 05", "PC 06", "PC 07", "PC 08", "PC 09"],
+        ["Pristine Clean", "Ambient Clean", "Dotted Delay", "PC 13", "PC 14", "PC 15", "PC 16", "PC 17", "PC 18", "PC 19"],
+        ["Tweed Drive", "Boosted Tweed", "Edge Of Breakup", "PC 23", "PC 24", "PC 25", "PC 26", "PC 27", "PC 28", "PC 29"],
+        ["Edgy Rock", "Pushed Edge", "Spanky Lead", "PC 33", "PC 34", "PC 35", "PC 36", "PC 37", "PC 38", "PC 39"],
+        ["Rock Rhythm", "Beefy Gain", "Squishy Lead", "PC 43", "PC 44", "PC 45", "PC 46", "PC 47", "PC 48", "PC 49"],
+        ["Latin Lead", "Single Notes", "Thicc Rhythm", "PC 53", "PC 54", "PC 55", "PC 56", "PC 57", "PC 58", "PC 59"],
+        ["Tight Rhythm", "Liquid Lead", "T-Rex Rhythm", "Metropolis", "PC 64", "PC 65", "PC 66", "PC 67", "PC 68", "PC 69"],
+        ["Dream Rhythm", "Sustain Lead", "Chocolate Cake", "PC 73", "PC 74", "PC 75", "PC 76", "PC 77", "PC 78", "PC 79"],
+        ["Balanced Rhythm", "Smooth Lead", "Extreme Boost", "PC 83", "PC 84", "PC 85", "PC 86", "PC 87", "PC 88", "PC 89"]
+      ],
+      "presets": [
+        {
+          "label": "ML5 Fat / Fat Clean",
+          "program": 0,
+          "hotkey": "ctrl+alt+4"
+        },
+        {
+          "label": "ML5 Clean / Fat Clean",
+          "program": 10,
+          "hotkey": "ctrl+alt+5"
+        }
+      ],
+      "toggle_buttons": [
+        {
+          "label": "Noise Gate",
+          "cc": 2,
+          "off_value": 0,
+          "on_value": 127
+        },
+        {
+          "label": "Compressor",
+          "cc": 5,
+          "off_value": 0,
+          "on_value": 127
+        },
+        {
+          "label": "Drive",
+          "cc": 1,
+          "off_value": 0,
+          "on_value": 127
+        },
+        {
+          "label": "Chorus",
+          "cc": 6,
+          "off_value": 0,
+          "on_value": 127
+        },
+        {
+          "label": "Delay",
+          "cc": 3,
+          "off_value": 0,
+          "on_value": 127
+        },
+        {
+          "label": "Reverb",
+          "cc": 4,
+          "off_value": 0,
+          "on_value": 127
+        }
+      ]
+    },
+    {
+      "name": "AmpliTube",
+      "channel": 3,
+      "bank_msb": null,
+      "bank_lsb": null,
+      "presets": [
+        {
+          "label": "AT Clean",
+          "program": 20,
+          "hotkey": "ctrl+alt+6"
+        },
+        {
+          "label": "AT Solo",
+          "program": 21,
+          "hotkey": "ctrl+alt+7"
+        }
+      ]
+    }
+  ]
+}
