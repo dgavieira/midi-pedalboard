@@ -4,7 +4,7 @@ MIDI Preset Switcher is a Windows 11 desktop application built with Python and T
 
 It is designed for local live use on Windows:
 - select a loopMIDI output
-- trigger Program Changes for supported plugins
+- trigger Program Changes and CC toggles
 - send CC-based stomp toggles
 - use a dedicated ML5 live-performance window
 
@@ -27,11 +27,18 @@ Python `3.14` can require native build tools for `python-rtmidi`.
   - preset grid for `PC 00` to `PC 89`
   - pedalboard stomp toggles for CC footswitch behavior
 
-## Supported Plugin Workflows
+## Current Support
 
-### Archetype Petrucci
+The project currently provides full workflow support for:
+- `ML Sound Lab ML5`
 
-- standard preset buttons with per-preset Program Change numbers
+The config still contains placeholder sections for:
+- `Archetype Petrucci`
+- `AmpliTube`
+
+Those sections should currently be treated as generic MIDI examples, not as fully implemented or officially supported plugin integrations.
+
+## Supported Workflow
 
 ### ML Sound Lab ML5
 
@@ -55,14 +62,13 @@ Current ML5 stomp CC defaults:
 - Compressor: `CC 5`
 - Chorus: `CC 6`
 
-### AmpliTube
-
-- standard preset buttons with per-preset Program Change numbers
-
 ## Project Structure
 
+- `main.py`
+  Primary launcher entry point.
+
 - `midi_preset_switcher.py`
-  Launcher entry point.
+  Legacy compatibility launcher and old monolithic source retained during refactoring.
 
 - `midi_preset_switcher_config.json`
   User-editable runtime configuration.
@@ -93,7 +99,19 @@ Current ML5 stomp CC defaults:
   Global hotkey registration and cleanup.
 
 - `midi_preset_switcher_app/ui/app.py`
-  Tkinter application and window logic.
+  Tkinter application coordinator.
+
+- `midi_preset_switcher_app/ui/live_view.py`
+  Dedicated ML5 live-view window manager.
+
+- `midi_preset_switcher_app/ui/main_window_sections.py`
+  Main window layout sections such as MIDI output, manual MIDI, and log panels.
+
+- `midi_preset_switcher_app/ui/plugin_section_builder.py`
+  Plugin section builders for preset buttons, plugin controls, and ML5 launcher rows.
+
+- `midi_preset_switcher_app/ui/state.py`
+  Tkinter UI state dataclasses.
 
 ## Architecture
 
@@ -107,6 +125,9 @@ Core roles:
 - `MidiController` owns MIDI port and message behavior.
 - `HotkeyManager` owns global hotkey registration and cleanup.
 - `PresetSwitcherApp` coordinates the Tkinter UI and uses the service layer.
+- `LiveViewManager` owns the ML5 live-performance window and stomp-state syncing.
+- `MainWindowSections` builds the shared main-window panels.
+- `PluginSectionBuilder` builds plugin-specific UI sections while leaving behavior in the app layer.
 
 This separation improves:
 - readability
@@ -140,7 +161,7 @@ python -m pip install -r requirements.txt
 If PowerShell blocks activation, run directly with:
 
 ```powershell
-.\.venv312\Scripts\python.exe midi_preset_switcher.py
+.\.venv312\Scripts\python.exe main.py
 ```
 
 ## loopMIDI Setup
@@ -155,7 +176,7 @@ If PowerShell blocks activation, run directly with:
 From PowerShell in the project folder:
 
 ```powershell
-.\.venv312\Scripts\python.exe midi_preset_switcher.py
+.\.venv312\Scripts\python.exe main.py
 ```
 
 ## Configuration
@@ -169,6 +190,7 @@ Important config rules:
 - hotkeys are optional
 - ML5 stomp buttons use assignable CC numbers
 - ML5 `program_grid` maps names to `PC 00-89`
+- ML5 `program_toggle_states` can store the expected stomp on/off snapshot for each Program Change
 
 Example excerpt:
 
@@ -183,11 +205,31 @@ Example excerpt:
   "toggle_buttons": [
     {"label": "Drive", "cc": 1, "off_value": 0, "on_value": 127},
     {"label": "Noise Gate", "cc": 2, "off_value": 0, "on_value": 127}
-  ]
+  ],
+  "program_toggle_states": {
+    "0": {
+      "Noise Gate": false,
+      "Compressor": false,
+      "Drive": true,
+      "Chorus": false,
+      "Delay": false,
+      "Reverb": true
+    }
+  }
 }
 ```
 
 After editing the config, restart the app or use the built-in `Save Config` and `Open Config` actions.
+
+### ML5 Stomp State Sync
+
+ML5 preset loading over MIDI Program Change is one-way unless the plugin sends MIDI feedback back to the app. Because of that, the app cannot automatically read the real stompbox state from ML5 on its own.
+
+To avoid showing stale pedal states:
+- when you send an ML5 Program Change and there is no saved snapshot for that program, the live stomp buttons switch to `UNKNOWN`
+- when `program_toggle_states` contains a snapshot for that program, the live stomp buttons restore those saved `ON` and `OFF` states
+
+This keeps the UI honest while still letting you define known states where you want tighter live synchronization.
 
 ## User Interface Overview
 
@@ -195,7 +237,7 @@ After editing the config, restart the app or use the built-in `Save Config` and 
 
 - MIDI output selection
 - refresh, test, and panic actions
-- plugin sections for Petrucci, ML5, and AmpliTube
+- generic plugin/config sections
 - manual MIDI section
 - auto-scrolling log
 
@@ -230,6 +272,7 @@ The dedicated ML5 live window includes:
 - confirm the MIDI channel matches
 - check whether the plugin expects Program Change only or Bank Select plus Program Change
 - use the Manual MIDI section to test exact values
+- for plugins other than ML5, treat the current UI as generic MIDI sending rather than dedicated product support
 
 ### ML5 Stomp Buttons Do Not Work
 
@@ -237,6 +280,12 @@ The dedicated ML5 live window includes:
 - make sure the config uses the same CC numbers
 - remember the stomp buttons send toggle-style CC values only
 - default toggle values are usually `0` for off and `127` for on
+
+### ML5 Stomp States Look Unknown After Preset Change
+
+- this is expected when the selected Program Change has no `program_toggle_states` snapshot in the config
+- add a snapshot for that PC number if you want the live view to restore the expected pedal states after loading the preset
+- if ML5 does not transmit MIDI feedback, `UNKNOWN` is safer than showing stale `ON` or `OFF` states
 
 ### Hotkeys Do Not Work
 
@@ -257,6 +306,7 @@ This project currently prioritizes:
 - practical live-use controls
 - readable architecture
 - config-based customization
+- ML5 as the primary supported plugin workflow
 
 Potential next steps:
 - scene or song mode

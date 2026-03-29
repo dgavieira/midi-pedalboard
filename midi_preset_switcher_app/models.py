@@ -45,6 +45,25 @@ class ToggleButtonConfig:
         return asdict(self)
 
 
+def _normalize_program_toggle_states(value: Any) -> dict[str, dict[str, bool]]:
+    if not isinstance(value, dict):
+        return {}
+    normalized: dict[str, dict[str, bool]] = {}
+    for key, state_map in value.items():
+        try:
+            program_key = str(int(key))
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(state_map, dict):
+            continue
+        normalized[program_key] = {
+            str(toggle_label): bool(is_on)
+            for toggle_label, is_on in state_map.items()
+            if isinstance(toggle_label, str)
+        }
+    return normalized
+
+
 @dataclass
 class PluginConfig:
     name: str
@@ -57,6 +76,7 @@ class PluginConfig:
     preset_labels: list[str] = field(default_factory=list)
     program_grid: list[list[str]] = field(default_factory=list)
     toggle_buttons: list[ToggleButtonConfig] = field(default_factory=list)
+    program_toggle_states: dict[str, dict[str, bool]] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PluginConfig":
@@ -79,6 +99,7 @@ class PluginConfig:
                 for item in data.get("toggle_buttons", [])
                 if isinstance(item, dict)
             ],
+            program_toggle_states=_normalize_program_toggle_states(data.get("program_toggle_states")),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -93,6 +114,7 @@ class PluginConfig:
             "program_grid": self.program_grid,
             "presets": [preset.to_dict() for preset in self.presets],
             "toggle_buttons": [toggle.to_dict() for toggle in self.toggle_buttons],
+            "program_toggle_states": self.program_toggle_states,
         }
 
 

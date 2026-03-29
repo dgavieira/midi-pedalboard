@@ -62,6 +62,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
                 {"label": "Delay", "cc": 3, "off_value": 0, "on_value": 127},
                 {"label": "Reverb", "cc": 4, "off_value": 0, "on_value": 127},
             ],
+            "program_toggle_states": {},
         },
         {
             "name": "AmpliTube",

@@ -101,7 +101,8 @@
           "off_value": 0,
           "on_value": 127
         }
-      ]
+      ],
+      "program_toggle_states": {}
     },
     {
       "name": "AmpliTube",
